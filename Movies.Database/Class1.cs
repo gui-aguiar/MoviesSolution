@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Movies.Server.SelfHost.Controllers
+namespace Movies.Database
 {
-    class Gnedercontroller
+    public class Class1
     {
     }
 }

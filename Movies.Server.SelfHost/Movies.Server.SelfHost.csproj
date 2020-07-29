@@ -68,7 +68,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\AutofacConfigurator.cs" />
-    <Compile Include="Controllers\Gnedercontroller.cs" />
+    <Compile Include="Controllers\Gendercontroller.cs" />
     <Compile Include="Controllers\MovieController.cs" />
     <Compile Include="Controllers\RentalController.cs" />
     <Compile Include="Program.cs" />
@@ -79,6 +79,11 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Movies.Models\Movies.Models.csproj">
+      <Project>{985530D1-AB22-4B4C-A98D-1133149E5784}</Project>
+      <Name>Movies.Models</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
