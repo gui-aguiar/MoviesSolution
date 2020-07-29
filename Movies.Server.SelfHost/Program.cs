@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Movies.Server.SelfHost.Configuration;
+using Microsoft.Owin.Hosting;
+using System;
 
 namespace Movies.Server.SelfHost
 {
@@ -10,6 +8,14 @@ namespace Movies.Server.SelfHost
     {
         static void Main(string[] args)
         {
+            string baseAddress = "http://localhost:9000/";
+            
+            // Inicia o host OWIN 
+            using (WebApp.Start<Startup>(url: baseAddress))
+            {
+                Console.WriteLine("Web Api Self-Host...");
+                Console.ReadLine();
+            }
         }
     }
 }
