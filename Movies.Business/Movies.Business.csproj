@@ -42,7 +42,23 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GenderBusiness.cs" />
+    <Compile Include="MovieBusiness.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RentalBusiness.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Movies.Database\Movies.Database.csproj">
+      <Project>{EAB329DD-6AB2-4B6E-B800-443CFC920F4A}</Project>
+      <Name>Movies.Database</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Movies.Interfaces\Movies.Interfaces.csproj">
+      <Project>{10777AF7-E041-4D58-B90C-B8852C386789}</Project>
+      <Name>Movies.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Movies.Models\Movies.Models.csproj">
+      <Project>{985530D1-AB22-4B4C-A98D-1133149E5784}</Project>
+      <Name>Movies.Models</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

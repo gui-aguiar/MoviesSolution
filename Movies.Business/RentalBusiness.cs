@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Movies.Database
+namespace Movies.Business
 {
-    public class Class1
+    class RentalBusiness
     {
     }
 }

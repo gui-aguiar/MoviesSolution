@@ -1,4 +1,7 @@
-﻿using Movies.Models;
+﻿using Autofac;
+using Movies.Interfaces.Repository;
+using Movies.Models;
+using Movies.Server.SelfHost.Configuration;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
@@ -7,6 +10,12 @@ namespace Movies.Server.SelfHost.Controllers
 {
     public class Gendercontroller : ApiController
     {
+        private readonly IRepository<Gender> _genderBusiness;
+        public Gendercontroller()
+        {
+            _genderBusiness = AutofacConfigurator.Instance.Container.Resolve<IRepository<Gender>>();
+        }
+
         public IEnumerable<Gender> Get()
         {
             return new List<Gender>();

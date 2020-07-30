@@ -15,6 +15,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Movies.Database", "Movies.D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Movies.Interfaces", "Movies.Interfaces\Movies.Interfaces.csproj", "{10777AF7-E041-4D58-B90C-B8852C386789}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Facial.Database", "Facial.Database\Facial.Database.csproj", "{7861219E-B433-4DBA-BC02-5E38FBE77D08}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Facial.Business", "Facial.Business\Facial.Business.csproj", "{18996B1C-0BF4-439B-AE53-CA614BB4AE0E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +49,14 @@ Global
 		{10777AF7-E041-4D58-B90C-B8852C386789}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{10777AF7-E041-4D58-B90C-B8852C386789}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{10777AF7-E041-4D58-B90C-B8852C386789}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7861219E-B433-4DBA-BC02-5E38FBE77D08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7861219E-B433-4DBA-BC02-5E38FBE77D08}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7861219E-B433-4DBA-BC02-5E38FBE77D08}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7861219E-B433-4DBA-BC02-5E38FBE77D08}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18996B1C-0BF4-439B-AE53-CA614BB4AE0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18996B1C-0BF4-439B-AE53-CA614BB4AE0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18996B1C-0BF4-439B-AE53-CA614BB4AE0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18996B1C-0BF4-439B-AE53-CA614BB4AE0E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
