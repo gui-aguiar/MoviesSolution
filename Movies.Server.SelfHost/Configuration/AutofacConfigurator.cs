@@ -3,6 +3,7 @@ using Movies.Business;
 using Movies.Models;
 using Movies.Interfaces.Repository;
 using System;
+using Movies.Database;
 
 namespace Movies.Server.SelfHost.Configuration
 {
@@ -10,10 +11,17 @@ namespace Movies.Server.SelfHost.Configuration
     {
         #region Fields
         private static readonly Lazy<AutofacConfigurator> fInstance = new Lazy<AutofacConfigurator>(() => new AutofacConfigurator());
+        IContainer fContainer;
         #endregion
 
         #region Properties
-        public IContainer Container { get; }
+        public IContainer Container
+        {
+            get
+            {
+                return fContainer;
+            }
+        }
 
         public static AutofacConfigurator Instance
         {
@@ -29,10 +37,11 @@ namespace Movies.Server.SelfHost.Configuration
         {
             var builder = new ContainerBuilder();
 
+            builder.RegisterType<MoviesDBContext>();
             builder.RegisterType<GenderBusiness>().As<IRepository<Gender>>().SingleInstance();
-     /*       builder.RegisterType<OpenWeatherClient>().As<IOpenWeatherClient>().SingleInstance();
-            builder.RegisterType<Clock>().As<IClock>();
-            fContainer = builder.Build();*/
+            builder.RegisterType<MovieBusiness>().As<IRepository<Movie>>().SingleInstance();
+            builder.RegisterType<RentalBusiness>().As<IRepository<Rental>>().SingleInstance();
+            fContainer = builder.Build();
         }
         #endregion
     }

@@ -14,14 +14,12 @@ namespace Movies.Database
             Database.Log = System.Console.Write;
             #endif
         }
-
-        public DbSet<Gender> People { get; set; }
-        public DbSet<Movie> Photos { get; set; }
-        public DbSet<Rental> Devices { get; set; }
+        public DbSet<Gender> Gender { get; set; }
+        public DbSet<Movie> Movie { get; set; }
+        public DbSet<Rental> Rental { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-
             modelBuilder.HasDefaultSchema("Movies");
             modelBuilder.Configurations.Add(new GenderConfiguration());
             modelBuilder.Configurations.Add(new MovieConfiguration());

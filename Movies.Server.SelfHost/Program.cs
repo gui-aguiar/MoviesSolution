@@ -8,8 +8,10 @@ namespace Movies.Server.SelfHost
     {
         static void Main(string[] args)
         {
-            string baseAddress = "http://localhost:9000/";
-            
+            AutofacConfigurator.Instance.ConfigureDependencyInjection();
+
+            string baseAddress = "http://localhost:9000/";            
+
             // Inicia o host OWIN 
             using (WebApp.Start<Startup>(url: baseAddress))
             {

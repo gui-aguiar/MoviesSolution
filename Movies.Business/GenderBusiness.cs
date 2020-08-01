@@ -2,6 +2,8 @@
 using Movies.Interfaces.Repository;
 using Movies.Models;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Movies.Business
 {
@@ -12,29 +14,41 @@ namespace Movies.Business
         {
             _context = context;
         }
-        public void Add(Gender item)
+        public IEnumerable<Gender> List()
         {
-           //return _con
-        }
-
-        public void Delete(int pId)
-        {
-            throw new System.NotImplementedException();
+            return _context.Gender;
         }
 
         public Gender Get(int id)
         {
-            throw new System.NotImplementedException();
+            return _context.Gender.SingleOrDefault(g => g.Id == id);
         }
 
-        public IEnumerable<Gender> List()
+        public void AddAsync(Gender item)
         {
-            throw new System.NotImplementedException();
+            _context.Gender.Add(item);            
+        }
+     
+        public void UpdateAsync(Gender item)
+        {
+            var repoGender = _context.Gender.SingleOrDefault(g => g.Id == item.Id);
+            if (repoGender != null)
+            {
+                repoGender.CreationDateTime = item.CreationDateTime;
+                repoGender.Enabled = item.Enabled;
+                repoGender.Name = item.Name;                
+            }
         }
 
-        public void Update(Gender temperature)
+        public void DeleteAsync(int id)
         {
-            throw new System.NotImplementedException();
+            var repoGender = _context.Gender.SingleOrDefault(g => g.Id == id);
+            if (repoGender != null)
+                _context.Gender.Remove(repoGender);               
+        }
+        public async Task ApplyChagesAsync()
+        {
+            await _context.SaveChangesAsync();
         }
     }
 }
