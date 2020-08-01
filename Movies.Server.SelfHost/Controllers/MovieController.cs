@@ -1,44 +1,181 @@
 ﻿using Autofac;
 using Movies.Interfaces.Repository;
 using Movies.Models;
+using Movies.Server.SelfHost.Common;
 using Movies.Server.SelfHost.Configuration;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Formatting;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Utils;
 
 namespace Movies.Server.SelfHost.Controllers
 {
     public class MovieController : ApiController
     {
         private readonly IRepository<Movie> _movieBusiness;
+        private readonly IRepository<Gender> _genderBusiness;
+
+        private static readonly JsonMediaTypeFormatter fJsonMTF = new JsonMediaTypeFormatter();
         public MovieController()
         {
             _movieBusiness = AutofacConfigurator.Instance.Container.Resolve<IRepository<Movie>>();
+            _genderBusiness = AutofacConfigurator.Instance.Container.Resolve<IRepository<Gender>>();
         }
 
-        public IEnumerable<Movie> Get()
+        [HttpGet]
+        public HttpResponseMessage Get()
         {
-            return _movieBusiness.List();
-        }
-        public Movie Get(int id)
-        {
-            return _movieBusiness.Get(id);
+            HttpResponseMessage response;
+            try
+            {
+                var movies = _movieBusiness.List();
+                if (!movies.Any())
+                {
+                    response = Request.CreateResponse(HttpStatusCode.NotFound);
+                    response.ReasonPhrase = Consts.C_GENDER_NOT_FOUND;
+                }
+                else
+                {
+                    response = Request.CreateResponse();
+                    response.Content = new ObjectContent<IEnumerable<Movie>>(movies, fJsonMTF, Consts.C_MT_JSON);
+                }
+            }
+            catch (Exception ex)
+            {
+                response = Request.CreateResponse(HttpStatusCode.InternalServerError);
+                response.ReasonPhrase = ExceptionUtils.GetErrorMessages(ex);
+            }
+            return response;
         }
 
-        public async Task Add(Movie movie)
+        [HttpGet]
+        public HttpResponseMessage Get(int id)
         {
-            _movieBusiness.AddAsync(movie);
-            await _movieBusiness.ApplyChagesAsync();
+            HttpResponseMessage response;
+            try
+            {
+                var movie = _movieBusiness.Get(id);
+                if (movie == null)
+                {
+                    response = Request.CreateResponse(HttpStatusCode.NotFound);
+                    response.ReasonPhrase = Consts.C_MOVIE_NOT_FOUND;
+                }
+                else
+                {
+                    response = Request.CreateResponse();
+                    response.Content = new ObjectContent<Movie>(movie, fJsonMTF, Consts.C_MT_JSON);
+                }
+            }
+            catch (Exception ex)
+            {
+                response = Request.CreateResponse(HttpStatusCode.InternalServerError);
+                response.ReasonPhrase = ExceptionUtils.GetErrorMessages(ex);
+            }
+            return response;
         }
-        public async Task Update(Movie movie)
+
+        [HttpPost]
+        public async Task<HttpResponseMessage> Add(Movie movie)
         {
-            _movieBusiness.UpdateAsync(movie);
-            await _movieBusiness.ApplyChagesAsync();
+            HttpResponseMessage response;
+            try
+            {
+                var gender = _genderBusiness.Get(movie.Gender.Id);
+                if (gender != null)
+                {
+                    movie.Gender = gender;
+                    _movieBusiness.AddAsync(movie);
+                    await _movieBusiness.ApplyChagesAsync();
+
+                    response = Request.CreateResponse();
+                    response.Content = new ObjectContent<Movie>(movie, fJsonMTF, Consts.C_MT_JSON);
+                }
+                else
+                {
+                    response = Request.CreateResponse(HttpStatusCode.NotFound);
+                    response.ReasonPhrase = Consts.C_GENDER_NOT_FOUND;
+                    response.Content = new StringContent("Create movie gender first");
+                }
+            }
+            catch (Exception ex)
+            {
+                response = Request.CreateResponse(HttpStatusCode.InternalServerError);
+                response.ReasonPhrase = ExceptionUtils.GetErrorMessages(ex);
+            }
+            return response;
         }
-        public async Task Remove(int id)
+
+        [HttpPut]
+        public async Task<HttpResponseMessage> Update(int id,Movie movie)
         {
-            _movieBusiness.DeleteAsync(id);
-            await _movieBusiness.ApplyChagesAsync();
+            HttpResponseMessage response;
+            try
+            {
+                var repoMovie = _movieBusiness.Get(id);
+                if (repoMovie == null)
+                {
+                    response = Request.CreateResponse(HttpStatusCode.NotFound);
+                    response.ReasonPhrase = Consts.C_MOVIE_NOT_FOUND;
+                }
+                else
+                {
+                    var gender = _genderBusiness.Get(movie.Gender.Id);
+                    if (gender != null)
+                    {   
+                        // no gender properties will be edited                        
+                        movie.Gender = gender;
+                        _movieBusiness.UpdateAsync(id, movie);
+                        await _movieBusiness.ApplyChagesAsync();
+
+                        response = Request.CreateResponse();
+                        response.Content = new ObjectContent<Movie>(repoMovie, fJsonMTF, Consts.C_MT_JSON);
+                    }
+                    else
+                    {
+                        response = Request.CreateResponse(HttpStatusCode.NotFound);
+                        response.ReasonPhrase = Consts.C_GENDER_NOT_FOUND;
+                        response.Content = new StringContent("Create movie gender first");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                response = Request.CreateResponse(HttpStatusCode.InternalServerError);
+                response.ReasonPhrase = ExceptionUtils.GetErrorMessages(ex);
+            }
+            return response;
+        }
+        
+        [HttpDelete]
+        public async Task<HttpResponseMessage> Remove(int id)
+        {
+            HttpResponseMessage response;
+            try
+            {
+                var movie = _movieBusiness.Get(id);
+                if (movie == null)
+                {
+                    response = Request.CreateResponse(HttpStatusCode.NotFound);
+                    response.ReasonPhrase = Consts.C_MOVIE_NOT_FOUND;
+                }
+
+                _movieBusiness.DeleteAsync(id);
+                await _movieBusiness.ApplyChagesAsync();
+
+                response = Request.CreateResponse();
+                response.Content = new StringContent(Consts.C_MOVIE_DELETED);
+            }
+            catch (Exception ex)
+            {
+                response = Request.CreateResponse(HttpStatusCode.InternalServerError);
+                response.ReasonPhrase = ExceptionUtils.GetErrorMessages(ex);
+            }
+            return response;
         }
     }
 }

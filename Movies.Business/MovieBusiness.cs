@@ -2,6 +2,7 @@
 using Movies.Interfaces.Repository;
 using Movies.Models;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -12,16 +13,19 @@ namespace Movies.Business
         private readonly MoviesDBContext _context;
         public MovieBusiness(MoviesDBContext context)
         {
-            _context = context;
+            _context = context;            
         }
         public IEnumerable<Movie> List()
         {
-            return _context.Movie;
+            return _context.Movie
+                   .Include(m => m.Gender);
         }
 
         public Movie Get(int id)
         {
-            return _context.Movie.SingleOrDefault(m => m.Id == id);
+            return _context.Movie
+                    .Include(m => m.Gender)
+                    .SingleOrDefault(m => m.Id == id);
         }
 
         public void AddAsync(Movie item)
@@ -29,9 +33,9 @@ namespace Movies.Business
             _context.Movie.Add(item);            
         }
 
-        public void UpdateAsync(Movie item)
+        public void UpdateAsync(int id, Movie item)
         {
-            var repoMovie = _context.Movie.SingleOrDefault(m => m.Id == item.Id);
+            var repoMovie = _context.Movie.SingleOrDefault(m => m.Id == id);
             if (repoMovie != null)
             {
                 repoMovie.Name = item.Name;

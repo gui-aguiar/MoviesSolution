@@ -37,7 +37,7 @@ namespace Movies.Server.SelfHost.Configuration
         {
             var builder = new ContainerBuilder();
 
-            builder.RegisterType<MoviesDBContext>();
+            builder.RegisterType<MoviesDBContext>().SingleInstance();
             builder.RegisterType<GenderBusiness>().As<IRepository<Gender>>().SingleInstance();
             builder.RegisterType<MovieBusiness>().As<IRepository<Movie>>().SingleInstance();
             builder.RegisterType<RentalBusiness>().As<IRepository<Rental>>().SingleInstance();

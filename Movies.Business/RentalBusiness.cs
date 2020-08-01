@@ -2,6 +2,7 @@
 using Movies.Interfaces.Repository;
 using Movies.Models;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -16,20 +17,23 @@ namespace Movies.Business
         }
         public IEnumerable<Rental> List()
         {
-            return _context.Rental;
+            return _context.Rental
+                    .Include(r => r.MoviesList);
         }
 
         public Rental Get(int id)
         {
-            return _context.Rental.SingleOrDefault(r => r.Id == id);
+            return _context.Rental
+                   .Include(r => r.MoviesList)
+                   .SingleOrDefault(r => r.Id == id);
         }
         public void AddAsync(Rental item)
         {
             _context.Rental.Add(item);            
         }
-        public void UpdateAsync(Rental item)
+        public void UpdateAsync(int id, Rental item)
         {
-            var repoRental = _context.Rental.SingleOrDefault(r => r.Id == item.Id);
+            var repoRental = _context.Rental.SingleOrDefault(r => r.Id == id);
             if (repoRental != null)
             {
                 repoRental.RentalDateTime = item.RentalDateTime;

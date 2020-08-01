@@ -17,8 +17,7 @@ namespace Movies.Database.Configuration
             this.Property(r => r.RentalDateTime)
                 .IsRequired();
 
-            this.HasMany<Movie>(m => m.MoviesList)
-                .WithRequired();
+            this.HasMany<Movie>(m => m.MoviesList);          
         }
     }
 }

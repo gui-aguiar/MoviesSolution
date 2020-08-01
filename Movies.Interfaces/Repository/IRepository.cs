@@ -8,7 +8,7 @@ namespace Movies.Interfaces.Repository
         IEnumerable<T> List();
         T Get(int id);
         void AddAsync(T item);
-        void UpdateAsync(T item);
+        void UpdateAsync(int id, T item);
         void DeleteAsync(int id);
         Task ApplyChagesAsync();
     }

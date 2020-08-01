@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Movies.Interfaces.Repository;
 using Movies.Models;
+using Movies.Server.SelfHost.Common;
 using Movies.Server.SelfHost.Configuration;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,6 @@ namespace Movies.Server.SelfHost.Controllers
     {
         private readonly IRepository<Gender> _genderBusiness;
         private static readonly JsonMediaTypeFormatter fJsonMTF = new JsonMediaTypeFormatter();
-        public static readonly string C_MT_JSON = "application/json";
         public Gendercontroller()
         {   
             _genderBusiness = AutofacConfigurator.Instance.Container.Resolve<IRepository<Gender>>();
@@ -34,12 +34,12 @@ namespace Movies.Server.SelfHost.Controllers
                 if(!genders.Any())
                 {
                     response = Request.CreateResponse(HttpStatusCode.NotFound);
-                    response.ReasonPhrase = "No genders found";
+                    response.ReasonPhrase = Consts.C_MOVIE_NOT_FOUND;
                 }
                 else
                 {                    
                     response = Request.CreateResponse();
-                    response.Content = new ObjectContent<IEnumerable<Gender>>(genders, fJsonMTF, C_MT_JSON);
+                    response.Content = new ObjectContent<IEnumerable<Gender>>(genders, fJsonMTF, Consts.C_MT_JSON);
                 }
             }
             catch (Exception ex)
@@ -60,12 +60,12 @@ namespace Movies.Server.SelfHost.Controllers
                 if (gender == null)
                 {
                     response = Request.CreateResponse(HttpStatusCode.NotFound);
-                    response.ReasonPhrase = "No gender found";
+                    response.ReasonPhrase = Consts.C_GENDER_NOT_FOUND; 
                 } 
                 else 
                 {                    
                     response = Request.CreateResponse();                 
-                    response.Content = new ObjectContent<Gender>(gender, fJsonMTF, C_MT_JSON);
+                    response.Content = new ObjectContent<Gender>(gender, fJsonMTF, Consts.C_MT_JSON);
                 }
             }
             catch (Exception ex)
@@ -86,7 +86,7 @@ namespace Movies.Server.SelfHost.Controllers
                 await _genderBusiness.ApplyChagesAsync();
 
                 response = Request.CreateResponse();
-                response.Content = new ObjectContent<Gender>(gender, fJsonMTF, C_MT_JSON);
+                response.Content = new ObjectContent<Gender>(gender, fJsonMTF, Consts.C_MT_JSON);
             }
             catch (Exception ex)
             {
@@ -106,14 +106,16 @@ namespace Movies.Server.SelfHost.Controllers
                 if (repoGender == null)
                 {
                     response = Request.CreateResponse(HttpStatusCode.NotFound);
-                    response.ReasonPhrase = "No gender found";
+                    response.ReasonPhrase = Consts.C_GENDER_NOT_FOUND;
                 }
+                else
+                {                    
+                    _genderBusiness.UpdateAsync(id ,gender);
+                    await _genderBusiness.ApplyChagesAsync();
 
-                _genderBusiness.UpdateAsync(gender);
-                await _genderBusiness.ApplyChagesAsync();
-
-                response = Request.CreateResponse();
-                response.Content = new ObjectContent<Gender>(gender, fJsonMTF, C_MT_JSON);
+                    response = Request.CreateResponse();
+                    response.Content = new ObjectContent<Gender>(repoGender, fJsonMTF, Consts.C_MT_JSON);
+                }
             }
             catch (Exception ex)
             {
@@ -122,6 +124,8 @@ namespace Movies.Server.SelfHost.Controllers
             }
             return response;
         }
+
+        [HttpDelete]
         public async Task<HttpResponseMessage> Remove(int id)
         {
             HttpResponseMessage response;
@@ -131,14 +135,14 @@ namespace Movies.Server.SelfHost.Controllers
                 if (gender == null)
                 {
                     response = Request.CreateResponse(HttpStatusCode.NotFound);
-                    response.ReasonPhrase = "No gender found";
+                    response.ReasonPhrase = Consts.C_GENDER_NOT_FOUND;
                 }
 
                 _genderBusiness.DeleteAsync(id);
                 await _genderBusiness.ApplyChagesAsync();
 
                 response = Request.CreateResponse();
-                response.Content = new StringContent("Gender deleted successfully");
+                response.Content = new StringContent(Consts.C_GENDER_DELETED);
             }
             catch (Exception ex)
             {

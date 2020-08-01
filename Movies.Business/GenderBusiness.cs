@@ -20,7 +20,7 @@ namespace Movies.Business
         }
 
         public Gender Get(int id)
-        {
+        { 
             return _context.Gender.SingleOrDefault(g => g.Id == id);
         }
 
@@ -29,9 +29,9 @@ namespace Movies.Business
             _context.Gender.Add(item);            
         }
      
-        public void UpdateAsync(Gender item)
+        public void UpdateAsync(int id, Gender item)
         {
-            var repoGender = _context.Gender.SingleOrDefault(g => g.Id == item.Id);
+            var repoGender = _context.Gender.SingleOrDefault(g => g.Id == id);
             if (repoGender != null)
             {
                 repoGender.CreationDateTime = item.CreationDateTime;
