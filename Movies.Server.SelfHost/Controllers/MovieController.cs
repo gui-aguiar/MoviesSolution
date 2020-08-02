@@ -89,7 +89,7 @@ namespace Movies.Server.SelfHost.Controllers
                 if (gender != null)
                 {
                     movie.Gender = gender;
-                    _movieBusiness.AddAsync(movie);
+                    _movieBusiness.Add(movie);
                     await _movieBusiness.ApplyChagesAsync();
 
                     response = Request.CreateResponse();
@@ -129,7 +129,7 @@ namespace Movies.Server.SelfHost.Controllers
                     {   
                         // no gender properties will be edited                        
                         movie.Gender = gender;
-                        _movieBusiness.UpdateAsync(id, movie);
+                        _movieBusiness.Update(id, movie);
                         await _movieBusiness.ApplyChagesAsync();
 
                         response = Request.CreateResponse();
@@ -162,13 +162,15 @@ namespace Movies.Server.SelfHost.Controllers
                 {
                     response = Request.CreateResponse(HttpStatusCode.NotFound);
                     response.ReasonPhrase = Consts.C_MOVIE_NOT_FOUND;
+                } 
+                else
+                {
+                    _movieBusiness.Delete(id);
+                    await _movieBusiness.ApplyChagesAsync();
+
+                    response = Request.CreateResponse();
+                    response.Content = new StringContent(Consts.C_MOVIE_DELETED);
                 }
-
-                _movieBusiness.DeleteAsync(id);
-                await _movieBusiness.ApplyChagesAsync();
-
-                response = Request.CreateResponse();
-                response.Content = new StringContent(Consts.C_MOVIE_DELETED);
             }
             catch (Exception ex)
             {

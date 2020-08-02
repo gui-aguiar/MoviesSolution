@@ -1,8 +1,11 @@
-﻿using Movies.Database;
+﻿using Dapper;
+using Movies.Database;
 using Movies.Interfaces.Repository;
 using Movies.Models;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data.Entity;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -18,7 +21,7 @@ namespace Movies.Business
         public IEnumerable<Movie> List()
         {
             return _context.Movie
-                   .Include(m => m.Gender);
+                  .Include(m => m.Gender);
         }
 
         public Movie Get(int id)
@@ -28,12 +31,12 @@ namespace Movies.Business
                     .SingleOrDefault(m => m.Id == id);
         }
 
-        public void AddAsync(Movie item)
+        public void Add(Movie item)
         {
             _context.Movie.Add(item);            
         }
 
-        public void UpdateAsync(int id, Movie item)
+        public void Update(int id, Movie item)
         {
             var repoMovie = _context.Movie.SingleOrDefault(m => m.Id == id);
             if (repoMovie != null)
@@ -44,11 +47,23 @@ namespace Movies.Business
             }
         }
 
-        public void DeleteAsync(int id)
+        public void Delete(int id)
         {
-            var repoMovie = _context.Movie.SingleOrDefault(m => m.Id == id);
+            /*var repoMovie = _context.Movie.SingleOrDefault(m => m.Id == id);
             if (repoMovie != null)
-                _context.Movie.Remove(repoMovie);
+                _context.Movie.Remove(repoMovie);*/
+
+            var connectionString = ConfigurationManager.ConnectionStrings["MoviesDB"].ConnectionString;
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var movie = connection.QuerySingleOrDefault<Movie>
+                ("Select * From Movies.Movies WHERE Id = @Id", new { id });
+
+                if (movie != null)
+                {
+                    connection.Execute("DELETE From Movies.Movies WHERE Id = @Id", new { id });
+                }
+            }
         }
 
         public async Task ApplyChagesAsync()

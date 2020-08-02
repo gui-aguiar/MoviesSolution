@@ -2,8 +2,11 @@
 using Movies.Interfaces.Repository;
 using Movies.Models;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Configuration;
+using Dapper;
 
 namespace Movies.Business
 {
@@ -16,20 +19,33 @@ namespace Movies.Business
         }
         public IEnumerable<Gender> List()
         {
-            return _context.Gender;
+            //return _context.Gender;
+            var connectionString = ConfigurationManager.ConnectionStrings["MoviesDB"].ConnectionString;
+            using (var connection = new SqlConnection(connectionString))
+            {
+                return connection.Query<Gender>
+                ("Select * From Movies.Genders").ToList();
+            }
         }
 
         public Gender Get(int id)
         { 
             return _context.Gender.SingleOrDefault(g => g.Id == id);
+
+            /*var connectionString = ConfigurationManager.ConnectionStrings["MoviesDB"].ConnectionString;
+            using (var connection = new SqlConnection(connectionString))
+            {
+                return connection.QuerySingleOrDefault<Gender>
+                ("Select * From Movies.Genders WHERE Id = @Id", new { id });
+            }*/
         }
 
-        public void AddAsync(Gender item)
+        public void Add(Gender item)
         {
             _context.Gender.Add(item);            
         }
      
-        public void UpdateAsync(int id, Gender item)
+        public void Update(int id, Gender item)
         {
             var repoGender = _context.Gender.SingleOrDefault(g => g.Id == id);
             if (repoGender != null)
@@ -40,11 +56,23 @@ namespace Movies.Business
             }
         }
 
-        public void DeleteAsync(int id)
+        public void Delete(int id)
         {
-            var repoGender = _context.Gender.SingleOrDefault(g => g.Id == id);
+            /*var repoGender = _context.Gender.SingleOrDefault(g => g.Id == id);
             if (repoGender != null)
-                _context.Gender.Remove(repoGender);               
+                _context.Gender.Remove(repoGender);*/
+           
+            var connectionString = ConfigurationManager.ConnectionStrings["MoviesDB"].ConnectionString;
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var gender = connection.QuerySingleOrDefault<Gender>
+                ("Select * From Movies.Genders WHERE Id = @Id", new { id });
+
+                if (gender != null)
+                {
+                    connection.Execute("DELETE From Movies.Genders WHERE Id = @Id", new { id });
+                }
+            }
         }
         public async Task ApplyChagesAsync()
         {

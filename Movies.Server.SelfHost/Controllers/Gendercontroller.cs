@@ -82,7 +82,7 @@ namespace Movies.Server.SelfHost.Controllers
             HttpResponseMessage response;
             try
             {
-                _genderBusiness.AddAsync(gender);
+                _genderBusiness.Add(gender);
                 await _genderBusiness.ApplyChagesAsync();
 
                 response = Request.CreateResponse();
@@ -110,7 +110,7 @@ namespace Movies.Server.SelfHost.Controllers
                 }
                 else
                 {                    
-                    _genderBusiness.UpdateAsync(id ,gender);
+                    _genderBusiness.Update(id ,gender);
                     await _genderBusiness.ApplyChagesAsync();
 
                     response = Request.CreateResponse();
@@ -137,12 +137,14 @@ namespace Movies.Server.SelfHost.Controllers
                     response = Request.CreateResponse(HttpStatusCode.NotFound);
                     response.ReasonPhrase = Consts.C_GENDER_NOT_FOUND;
                 }
+                else
+                {
+                    _genderBusiness.Delete(id);
+                    await _genderBusiness.ApplyChagesAsync();
 
-                _genderBusiness.DeleteAsync(id);
-                await _genderBusiness.ApplyChagesAsync();
-
-                response = Request.CreateResponse();
-                response.Content = new StringContent(Consts.C_GENDER_DELETED);
+                    response = Request.CreateResponse();
+                    response.Content = new StringContent(Consts.C_GENDER_DELETED);
+                }
             }
             catch (Exception ex)
             {

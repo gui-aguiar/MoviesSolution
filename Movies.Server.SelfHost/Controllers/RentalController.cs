@@ -82,7 +82,7 @@ namespace Movies.Server.SelfHost.Controllers
         [HttpPost]
         public async Task<HttpResponseMessage> Add(Rental rental)
         {
-            HttpResponseMessage response;
+            HttpResponseMessage response = null;
             try
             {
                 if (!CPFUtils.ValidateFormat(rental.CustomerCPF))
@@ -93,27 +93,14 @@ namespace Movies.Server.SelfHost.Controllers
                 }                
                 else
                 {
-                    var moviesSent = new List<Movie>();
-                    if (rental.MoviesList.Count > 0) {                        
-                        foreach (Movie m in rental.MoviesList)
-                        {
-                            var repoMovie = _movieBusiness.Get(m.Id);
-                            if (repoMovie != null)
-                            {
-                                moviesSent.Add(repoMovie);
-                            }
-                            else
-                            {
-                                response = Request.CreateResponse(HttpStatusCode.NotFound);
-                                response.ReasonPhrase = Consts.C_MOVIE_NOT_FOUND;
-                                response.Content = new StringContent($"Movie with id {m.Id} does not existis. Crate movie first");
-                                return response;
-                            }
-                        }
+                    List<Movie> moviesReceived = ValidateMovies(rental, ref response);
+                    if (response != null)
+                    {
+                        return response;
                     }
 
-                    rental.MoviesList = moviesSent;
-                    _rentalBusiness.AddAsync(rental);
+                    rental.MoviesList = moviesReceived;
+                    _rentalBusiness.Add(rental);
                     await _rentalBusiness.ApplyChagesAsync();
 
                     response = Request.CreateResponse();
@@ -131,7 +118,7 @@ namespace Movies.Server.SelfHost.Controllers
         [HttpPut]
         public async Task<HttpResponseMessage> Update(int id, Rental rental)
         {
-            HttpResponseMessage response;
+            HttpResponseMessage response = null;
             try
             {
                 var repoRental = _rentalBusiness.Get(id);
@@ -148,28 +135,14 @@ namespace Movies.Server.SelfHost.Controllers
                 }
                 else
                 {
-                    var moviesSent = new List<Movie>();
-                    if (rental.MoviesList.Count > 0)
+                    List<Movie> moviesReceived = ValidateMovies(rental, ref response);
+                    if (response != null)
                     {
-                        foreach (Movie m in rental.MoviesList)
-                        {
-                            var repoMovie = _movieBusiness.Get(m.Id);
-                            if (repoMovie != null)
-                            {
-                                moviesSent.Add(repoMovie);
-                            }
-                            else
-                            {
-                                response = Request.CreateResponse(HttpStatusCode.NotFound);
-                                response.ReasonPhrase = Consts.C_MOVIE_NOT_FOUND;
-                                response.Content = new StringContent("Movie with id {m.id} does not existis. Crate movie first");
-                                return response;
-                            }
-                        }
+                        return response;
                     }
-                    
-                    rental.MoviesList = moviesSent;
-                    _rentalBusiness.UpdateAsync(id, rental);
+
+                    rental.MoviesList = moviesReceived;
+                    _rentalBusiness.Update(id, rental);
                     await _rentalBusiness.ApplyChagesAsync();
 
                     response = Request.CreateResponse();
@@ -197,7 +170,7 @@ namespace Movies.Server.SelfHost.Controllers
                     response.ReasonPhrase = Consts.C_RENTAL_NOT_FOUND;
                 }
 
-                _rentalBusiness.DeleteAsync(id);
+                _rentalBusiness.Delete(id);
                 await _rentalBusiness.ApplyChagesAsync();
 
                 response = Request.CreateResponse();
@@ -209,6 +182,29 @@ namespace Movies.Server.SelfHost.Controllers
                 response.ReasonPhrase = ExceptionUtils.GetErrorMessages(ex);
             }
             return response;
-        }                
+        }
+
+        private List<Movie> ValidateMovies(Rental rental, ref HttpResponseMessage response)
+        {
+            var moviesReceived = new List<Movie>();
+            if (rental.MoviesList.Count > 0)
+            {
+                foreach (Movie m in rental.MoviesList)
+                {
+                    var repoMovie = _movieBusiness.Get(m.Id);
+                    if (repoMovie != null)
+                    {
+                        moviesReceived.Add(repoMovie);
+                    }
+                    else
+                    {
+                        response = Request.CreateResponse(HttpStatusCode.NotFound);
+                        response.ReasonPhrase = Consts.C_MOVIE_NOT_FOUND;
+                        response.Content = new StringContent($"Movie with id {m.Id} does not existis. Crate movie first");
+                    }
+                }
+            }
+            return moviesReceived;
+        }
     }
 }
