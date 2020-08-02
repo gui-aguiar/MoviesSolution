@@ -14,6 +14,7 @@ namespace Movies.Server.SelfHost.Common
         #region Json Conts
 
         public static readonly string C_MT_JSON = "application/json";
+        public static readonly string VALIDATION_ERROR_RESPONSE_PHRASE = "application/json";
 
         #endregion
 
@@ -35,7 +36,7 @@ namespace Movies.Server.SelfHost.Common
 
         public static readonly string C_RENTAL_NOT_FOUND = "Rental not found";
         public static readonly string C_RENTAL_DELETED = "Rental deleted successfully";
-
+        public static readonly string C_RENTAL_CPF_ERROR_MESSAGE = "CPF field is not correctly formatted.";
         #endregion
     }
 }

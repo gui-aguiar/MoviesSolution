@@ -9,14 +9,17 @@ namespace Movies.Server.SelfHost
     {
         static void Main(string[] args)
         {
+            // Configure the Autofac Dependeny injection
             AutofacConfigurator.Instance.ConfigureDependencyInjection();
-
+            
+            // Define the appplication addres
             string baseAddress = "http://localhost:9000/";            
 
-            // Inicia o host OWIN 
+            // Initiates the OWIN Server
             using (WebApp.Start<Startup>(url: baseAddress))
             {
-                Console.WriteLine("Web Api Self-Host...");
+                Console.WriteLine("Hosting the application server");
+                Console.WriteLine($"Use {baseAddress} to access it");
                 Console.ReadLine();
             }
         }

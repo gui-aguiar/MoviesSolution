@@ -15,15 +15,28 @@ namespace Movies.Server.SelfHost.Controllers
 {
     public class RentalController : ApiController
     {
+        #region Fields
         private readonly RentalBusiness _rentalBusiness;
         private readonly MovieBusiness _movieBusiness;
         private static readonly JsonMediaTypeFormatter fJsonMTF = new JsonMediaTypeFormatter();
+        #endregion
+
+        #region Contructors
         public RentalController()
         {
             _rentalBusiness = new RentalBusiness();
             _movieBusiness = new MovieBusiness();
         }
+        #endregion
 
+        #region Public methods
+
+        /// <summary>
+        /// List all Rentals
+        /// </summary>
+        /// <returns>Json containing all Rentals and its properties. 
+        /// Includes its Movies info with theirs Gender info. 
+        /// </returns>
         [HttpGet]
         public HttpResponseMessage Get()
         {
@@ -50,6 +63,11 @@ namespace Movies.Server.SelfHost.Controllers
             return response;
         }
 
+        /// <summary>
+        /// Retrieves specific Rental identified by its Id
+        /// </summary>
+        /// <param name="id">The Rental Id specified by an integer</param>
+        /// <returns>Json containing the Rental and its Movies with theirs info </returns>
         [HttpGet]
         public HttpResponseMessage Get(int id)
         {
@@ -76,6 +94,15 @@ namespace Movies.Server.SelfHost.Controllers
             return response;
         }
 
+        /// <summary>
+        /// Creates and stores a Rental
+        /// </summary>
+        /// <param name="movie">The Rental properties as JSon.
+        /// To create a Rental and relate it to a list of Movie, the Movies Ids must be provided.
+        /// In case of provide one invalid Movie Id, a error message will be returned. 
+        /// This method do not crate new Movies or Genders.
+        /// </param>
+        /// <returns>Json containing the created Rentals and its Movies with theirs info</returns>
         [HttpPost]
         public async Task<HttpResponseMessage> Add(Rental rental)
         {
@@ -84,9 +111,9 @@ namespace Movies.Server.SelfHost.Controllers
             {
                 if (!CPFUtils.ValidateFormat(rental.CustomerCPF))
                 {
-                    response = Request.CreateResponse(HttpStatusCode.BadRequest);  // 422 UNPROCESSABLE ENTITY
-                    response.ReasonPhrase = "Validation error";
-                    response.Content = new StringContent("CPF field is not correctly formatted.");
+                    response = Request.CreateResponse(HttpStatusCode.BadRequest);
+                    response.ReasonPhrase = Consts.VALIDATION_ERROR_RESPONSE_PHRASE;
+                    response.Content = new StringContent(Consts.C_RENTAL_CPF_ERROR_MESSAGE);
                 }                
                 else
                 {
@@ -112,6 +139,16 @@ namespace Movies.Server.SelfHost.Controllers
             return response;
         }
 
+        /// <summary>
+        /// Updates and store a Rental
+        /// </summary>
+        /// <param name="id">The Id of the Rental that will be updated</param>
+        /// <param name="rental">The new Rental properties as JSon. 
+        /// To edit the Movies list related to the Rental, the Movies Ids must be provided.
+        /// In case of provide one invalid Movie Id, an error message will be returned. 
+        /// This method do not crate or edit the Movies and theirs Genders properties.
+        /// </param>
+        /// <returns>Json containing the Rental info after the update</returns>
         [HttpPut]
         public async Task<HttpResponseMessage> Update(int id, Rental rental)
         {
@@ -126,9 +163,9 @@ namespace Movies.Server.SelfHost.Controllers
                 }
                 else if(!CPFUtils.ValidateFormat(rental.CustomerCPF))
                 {
-                    response = Request.CreateResponse(HttpStatusCode.BadRequest);  // 422 UNPROCESSABLE ENTITY
-                    response.ReasonPhrase = "Validation error";
-                    response.Content = new StringContent("CPF field is not correctly formatted.");
+                    response = Request.CreateResponse(HttpStatusCode.BadRequest);
+                    response.ReasonPhrase = Consts.VALIDATION_ERROR_RESPONSE_PHRASE;
+                    response.Content = new StringContent(Consts.C_RENTAL_CPF_ERROR_MESSAGE);
                 }
                 else
                 {
@@ -180,7 +217,19 @@ namespace Movies.Server.SelfHost.Controllers
             }
             return response;
         }
+        #endregion
 
+        #region Private methods
+
+        /// <summary>
+        /// Use all the Rental Movies Ids provided and retrives the related Movies and add it to the return list. 
+        /// In case of any invalid Id, the reference of the HttpReseponseMessage will be filled with the error message.
+        /// </summary>
+        /// <param name="rental">The Rental that will have its Movies list verified</param>
+        /// <param name="response">A reference to a HttpResponseMessage that will be filled with 
+        /// an especific message if any invalid Movie Id is present in the Rental Movies list.
+        /// </param>
+        /// <returns>A list containing all the Movies correctly retrieved</returns>
         private List<Movie> ValidateMovies(Rental rental, ref HttpResponseMessage response)
         {
             var moviesReceived = new List<Movie>();
@@ -197,11 +246,12 @@ namespace Movies.Server.SelfHost.Controllers
                     {
                         response = Request.CreateResponse(HttpStatusCode.NotFound);
                         response.ReasonPhrase = Consts.C_MOVIE_NOT_FOUND;
-                        response.Content = new StringContent($"Movie with id {m.Id} does not existis. Crate movie first");
+                        response.Content = new StringContent($"Movie with id {m.Id} does not existis. Crate this movie first");
                     }
                 }
             }
             return moviesReceived;
         }
+        #endregion
     }
 }

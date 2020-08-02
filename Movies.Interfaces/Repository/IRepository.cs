@@ -2,7 +2,10 @@
 using System.Threading.Tasks;
 
 namespace Movies.Interfaces.Repository
-{
+{   
+    /// <summary>
+    /// Interface representing the main operations of a Generic repository
+    /// </summary>
     public interface IRepository<T>
     {
         IEnumerable<T> List();

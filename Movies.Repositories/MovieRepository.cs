@@ -11,13 +11,24 @@ using System.Threading.Tasks;
 
 namespace Movies.Repositories
 {
+    /// <summary>
+    /// Implementation of the IRepository<T> to store Movies in a Database;
+    /// This class implementis its methods using Dapper and Entity Framework to perform the databae access.
+    /// </summary>
     public class MovieRepository : IRepository<Movie>
     {
+        #region Fields
         private readonly MoviesDBContext _context;
+        #endregion
+
+        #region Constructors
         public MovieRepository(MoviesDBContext context)
         {
             _context = context;
         }
+        #endregion
+
+        #region Public methods
         public IEnumerable<Movie> List()
         {
             return _context.Movie
@@ -46,7 +57,10 @@ namespace Movies.Repositories
 
         public void Delete(int id)
         {
+            // EF implementation
             /*_context.Movie.Remove(repoMovie);*/
+
+            // Dapper implementation
             var connectionString = ConfigurationManager.ConnectionStrings["MoviesDB"].ConnectionString;
             using (var connection = new SqlConnection(connectionString))
             {
@@ -58,5 +72,7 @@ namespace Movies.Repositories
         {
             await _context.SaveChangesAsync();
         }
+
+        #endregion
     }
 }

@@ -10,16 +10,31 @@ using Dapper;
 
 namespace Movies.Repositories
 {
+    /// <summary>
+    /// Implementation of the IRepository<T> to store Genders in a Database;
+    /// This class implementis its methods using Dapper and Entity Framework to perform the databae access.
+    /// </summary>
     public class GenderRepository : IRepository<Gender>
     {
+        #region Fields
         private readonly MoviesDBContext _context;
+        #endregion
+
+        #region Constructors
         public GenderRepository(MoviesDBContext context)
         {
             _context = context;
         }
+        #endregion
+
+        #region Public methods
+
         public IEnumerable<Gender> List()
         {
+            // EF implementation
             //return _context.Gender;
+            
+            // Dapper implementation
             var connectionString = ConfigurationManager.ConnectionStrings["MoviesDB"].ConnectionString;
             using (var connection = new SqlConnection(connectionString))
             {
@@ -30,8 +45,10 @@ namespace Movies.Repositories
 
         public Gender Get(int id)
         {
+            // EF implementation
             return _context.Gender.SingleOrDefault(g => g.Id == id);
 
+            // Dapper implementation
             /*var connectionString = ConfigurationManager.ConnectionStrings["MoviesDB"].ConnectionString;
             using (var connection = new SqlConnection(connectionString))
             {
@@ -58,10 +75,12 @@ namespace Movies.Repositories
 
         public void Delete(int id)
         {
+            // EF implementation
             /*var repoGender = _context.Gender.SingleOrDefault(g => g.Id == id);
             if (repoGender != null)
                 _context.Gender.Remove(repoGender);*/
 
+            // Dapper implementation
             var connectionString = ConfigurationManager.ConnectionStrings["MoviesDB"].ConnectionString;
             using (var connection = new SqlConnection(connectionString))
             {
@@ -78,5 +97,7 @@ namespace Movies.Repositories
         {
             await _context.SaveChangesAsync();
         }
+
+        #endregion
     }
 }
