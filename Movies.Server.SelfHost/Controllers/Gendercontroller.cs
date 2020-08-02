@@ -1,8 +1,6 @@
-﻿using Autofac;
-using Movies.Interfaces.Repository;
+﻿using Movies.Business;
 using Movies.Models;
 using Movies.Server.SelfHost.Common;
-using Movies.Server.SelfHost.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,11 +15,11 @@ namespace Movies.Server.SelfHost.Controllers
 {
     public class Gendercontroller : ApiController
     {
-        private readonly IRepository<Gender> _genderBusiness;
+        private readonly GenderBusiness _genderBusiness;
         private static readonly JsonMediaTypeFormatter fJsonMTF = new JsonMediaTypeFormatter();
         public Gendercontroller()
-        {   
-            _genderBusiness = AutofacConfigurator.Instance.Container.Resolve<IRepository<Gender>>();
+        {
+            _genderBusiness = new GenderBusiness();
         }
 
         [HttpGet]

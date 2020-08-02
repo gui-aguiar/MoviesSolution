@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Movies.Server.SelfHost.Common
 {
+    /// <summary>
+    /// Class containing static conts to be used by the entire project
+    /// </summary>
     public class Consts
     {
         #region Json Conts

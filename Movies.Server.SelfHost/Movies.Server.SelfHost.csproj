@@ -109,7 +109,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\Consts.cs" />
-    <Compile Include="Configuration\AutofacConfigurator.cs" />
     <Compile Include="Controllers\Gendercontroller.cs" />
     <Compile Include="Controllers\MovieController.cs" />
     <Compile Include="Controllers\RentalController.cs" />
@@ -122,8 +121,12 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Movies.Autofac\Movies.Autofac.csproj">
+      <Project>{4EA489C5-273A-4659-B882-7366E95FB747}</Project>
+      <Name>Movies.Autofac</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Movies.Business\Movies.Business.csproj">
-      <Project>{91D6EFAA-440C-423D-9B3B-0571CC55AF04}</Project>
+      <Project>{91d6efaa-440c-423d-9b3b-0571cc55af04}</Project>
       <Name>Movies.Business</Name>
     </ProjectReference>
     <ProjectReference Include="..\Movies.Database\Movies.Database.csproj">
@@ -137,6 +140,10 @@
     <ProjectReference Include="..\Movies.Models\Movies.Models.csproj">
       <Project>{985530D1-AB22-4B4C-A98D-1133149E5784}</Project>
       <Name>Movies.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Movies.Repositories\Movies.Repositories.csproj">
+      <Project>{5FF0A40A-AAD2-4EE3-AC97-E8140AE52EF9}</Project>
+      <Name>Movies.Repositories</Name>
     </ProjectReference>
     <ProjectReference Include="..\Utils\Utils.csproj">
       <Project>{2A2DB505-F285-496B-9E75-8A19945BE466}</Project>

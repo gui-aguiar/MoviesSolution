@@ -1,11 +1,11 @@
 ﻿using Autofac;
-using Movies.Models;
-using Movies.Interfaces.Repository;
-using System;
 using Movies.Database;
+using Movies.Interfaces.Repository;
+using Movies.Models;
 using Movies.Repositories;
+using System;
 
-namespace Movies.Server.SelfHost.Configuration
+namespace Movies.Autofac
 {
     public class AutofacConfigurator
     {

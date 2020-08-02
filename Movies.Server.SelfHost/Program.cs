@@ -1,6 +1,7 @@
 ﻿using Movies.Server.SelfHost.Configuration;
 using Microsoft.Owin.Hosting;
 using System;
+using Movies.Autofac;
 
 namespace Movies.Server.SelfHost
 {

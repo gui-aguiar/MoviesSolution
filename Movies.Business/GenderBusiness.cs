@@ -1,82 +1,60 @@
-﻿using Movies.Database;
+﻿using Autofac;
+using Movies.Autofac;
 using Movies.Interfaces.Repository;
 using Movies.Models;
 using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Linq;
 using System.Threading.Tasks;
-using System.Configuration;
-using Dapper;
 
 namespace Movies.Business
 {
-    public class GenderBusiness : IRepository<Gender>
+    public class GenderBusiness
     {
-        private readonly MoviesDBContext _context;
-        public GenderBusiness(MoviesDBContext context)
+        private readonly IRepository<Gender> _repository;
+        public GenderBusiness()
         {
-            _context = context;
+            _repository = AutofacConfigurator.Instance.Container.Resolve<IRepository<Gender>>();
         }
+
+        public GenderBusiness(IRepository<Gender> repository)
+        {
+            _repository = repository;
+        }
+
         public IEnumerable<Gender> List()
         {
-            //return _context.Gender;
-            var connectionString = ConfigurationManager.ConnectionStrings["MoviesDB"].ConnectionString;
-            using (var connection = new SqlConnection(connectionString))
-            {
-                return connection.Query<Gender>
-                ("Select * From Movies.Genders").ToList();
-            }
+            return _repository.List();           
         }
 
         public Gender Get(int id)
         { 
-            return _context.Gender.SingleOrDefault(g => g.Id == id);
-
-            /*var connectionString = ConfigurationManager.ConnectionStrings["MoviesDB"].ConnectionString;
-            using (var connection = new SqlConnection(connectionString))
-            {
-                return connection.QuerySingleOrDefault<Gender>
-                ("Select * From Movies.Genders WHERE Id = @Id", new { id });
-            }*/
+            return _repository.Get(id);
         }
 
         public void Add(Gender item)
         {
-            _context.Gender.Add(item);            
+            _repository.Add(item);            
         }
      
         public void Update(int id, Gender item)
         {
-            var repoGender = _context.Gender.SingleOrDefault(g => g.Id == id);
+            var repoGender = _repository.Get(id);
             if (repoGender != null)
             {
-                repoGender.CreationDateTime = item.CreationDateTime;
-                repoGender.Enabled = item.Enabled;
-                repoGender.Name = item.Name;                
+                _repository.Update(id, item);
             }
         }
 
         public void Delete(int id)
         {
-            /*var repoGender = _context.Gender.SingleOrDefault(g => g.Id == id);
+            var repoGender = _repository.Get(id);
             if (repoGender != null)
-                _context.Gender.Remove(repoGender);*/
-           
-            var connectionString = ConfigurationManager.ConnectionStrings["MoviesDB"].ConnectionString;
-            using (var connection = new SqlConnection(connectionString))
             {
-                var gender = connection.QuerySingleOrDefault<Gender>
-                ("Select * From Movies.Genders WHERE Id = @Id", new { id });
-
-                if (gender != null)
-                {
-                    connection.Execute("DELETE From Movies.Genders WHERE Id = @Id", new { id });
-                }
+                _repository.Delete(id);
             }
         }
         public async Task ApplyChagesAsync()
         {
-            await _context.SaveChangesAsync();
+            await _repository.ApplyChagesAsync();
         }
     }
 }

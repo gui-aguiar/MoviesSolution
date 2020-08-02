@@ -1,74 +1,60 @@
-﻿using Dapper;
-using Movies.Database;
+﻿using Autofac;
+using Movies.Autofac;
 using Movies.Interfaces.Repository;
 using Movies.Models;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Data.Entity;
-using System.Data.SqlClient;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Movies.Business
 {
-    public class MovieBusiness : IRepository<Movie>
+    public class MovieBusiness
     {
-        private readonly MoviesDBContext _context;
-        public MovieBusiness(MoviesDBContext context)
+        private readonly IRepository<Movie> _repository;
+        public MovieBusiness()
         {
-            _context = context;            
+            _repository = AutofacConfigurator.Instance.Container.Resolve<IRepository<Movie>>();
         }
+
+        public MovieBusiness(IRepository<Movie> repository)
+        {
+            _repository = repository;
+        }
+
         public IEnumerable<Movie> List()
         {
-            return _context.Movie
-                  .Include(m => m.Gender);
+            return _repository.List();
         }
 
         public Movie Get(int id)
         {
-            return _context.Movie
-                    .Include(m => m.Gender)
-                    .SingleOrDefault(m => m.Id == id);
+            return _repository.Get(id);
         }
 
         public void Add(Movie item)
         {
-            _context.Movie.Add(item);            
+            _repository.Add(item);
         }
 
         public void Update(int id, Movie item)
         {
-            var repoMovie = _context.Movie.SingleOrDefault(m => m.Id == id);
+            var repoMovie = _repository.Get(id);
             if (repoMovie != null)
             {
-                repoMovie.Name = item.Name;
-                repoMovie.Enabled = item.Enabled;
-                repoMovie.Gender = item.Gender;                
+                _repository.Update(id, item);
             }
         }
 
         public void Delete(int id)
         {
-            /*var repoMovie = _context.Movie.SingleOrDefault(m => m.Id == id);
+            var repoMovie = _repository.Get(id);
             if (repoMovie != null)
-                _context.Movie.Remove(repoMovie);*/
-
-            var connectionString = ConfigurationManager.ConnectionStrings["MoviesDB"].ConnectionString;
-            using (var connection = new SqlConnection(connectionString))
             {
-                var movie = connection.QuerySingleOrDefault<Movie>
-                ("Select * From Movies.Movies WHERE Id = @Id", new { id });
-
-                if (movie != null)
-                {
-                    connection.Execute("DELETE From Movies.Movies WHERE Id = @Id", new { id });
-                }
+                _repository.Delete(id);
             }
         }
-
         public async Task ApplyChagesAsync()
         {
-            await _context.SaveChangesAsync();
+            await _repository.ApplyChagesAsync();
         }
     }
 }
