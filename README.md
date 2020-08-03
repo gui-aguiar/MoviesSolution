@@ -21,7 +21,9 @@ The addreess to access the server API will be localhost:9000
 - Available URLs
 
     /api/gender - GET, POST, PUT, DELETE
+    
     /api/movie - GET, POST, PUT, DELETE
+    
     /api/rental - GET, POST, PUT, DELETE
   
 
