@@ -7,6 +7,9 @@ using System;
 
 namespace Movies.Autofac
 {
+    /// <summary>
+    /// Autofac Class responsible to configure dependcy injection and the class types container    
+    /// </summary>
     public class AutofacConfigurator
     {
         #region Fields
@@ -37,7 +40,10 @@ namespace Movies.Autofac
         {
             var builder = new ContainerBuilder();
 
+            // Defining the context as Singleton will make sure that operations with different business classes 
+            // will be in the same context and operation of one of them will be correctly applied by the others
             builder.RegisterType<MoviesDBContext>().SingleInstance();
+
             builder.RegisterType<GenderRepository>().As<IRepository<Gender>>().SingleInstance();
             builder.RegisterType<MovieRepository>().As<IRepository<Movie>>().SingleInstance();
             builder.RegisterType<RentalRepository>().As<IRepository<Rental>>().SingleInstance();
