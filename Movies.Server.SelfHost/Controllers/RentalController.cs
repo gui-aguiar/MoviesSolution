@@ -17,7 +17,6 @@ namespace Movies.Server.SelfHost.Controllers
     {
         #region Fields
         private readonly RentalBusiness _rentalBusiness;
-        private readonly MovieBusiness _movieBusiness;
         private static readonly JsonMediaTypeFormatter fJsonMTF = new JsonMediaTypeFormatter();
         #endregion
 
@@ -25,7 +24,6 @@ namespace Movies.Server.SelfHost.Controllers
         public RentalController()
         {
             _rentalBusiness = new RentalBusiness();
-            _movieBusiness = new MovieBusiness();
         }
         #endregion
 
@@ -97,7 +95,7 @@ namespace Movies.Server.SelfHost.Controllers
         /// <summary>
         /// Creates and stores a Rental
         /// </summary>
-        /// <param name="movie">The Rental properties as JSon.
+        /// <param name="rental">The Rental properties as JSon.
         /// To create a Rental and relate it to a list of Movie, the Movies Ids must be provided.
         /// In case of provide one invalid Movie Id, a error message will be returned. 
         /// This method do not crate new Movies or Genders.
@@ -115,21 +113,23 @@ namespace Movies.Server.SelfHost.Controllers
                     response.ReasonPhrase = Consts.VALIDATION_ERROR_RESPONSE_PHRASE;
                     response.Content = new StringContent(Consts.C_RENTAL_CPF_ERROR_MESSAGE);
                 }                
+                else if (!_rentalBusiness.ValidateRentalRelations(rental))
+                {
+                    response = Request.CreateResponse(HttpStatusCode.NotFound);
+                    response.ReasonPhrase = Consts.C_MOVIE_NOT_FOUND;
+                    response.Content = new StringContent(Consts.C_RENTAL_INVALID_MOVIE_ERROR_MESSAGE);
+                }
                 else
                 {
-                    List<Movie> moviesReceived = ValidateMovies(rental, ref response);
-                    if (response != null)
-                    {
-                        return response;
-                    }
-
-                    rental.MoviesList = moviesReceived;
+                    IEnumerable<int> moviesIds = rental.MoviesList.Select(m => m.Id);
+                    _rentalBusiness.FillRentalMovies(rental, moviesIds);
+                    
                     _rentalBusiness.Add(rental);
                     await _rentalBusiness.ApplyChagesAsync();
 
                     response = Request.CreateResponse();
                     response.Content = new ObjectContent<Rental>(rental, fJsonMTF, Consts.C_MT_JSON);
-                }
+                }             
             }
             catch (Exception ex)
             {
@@ -167,21 +167,23 @@ namespace Movies.Server.SelfHost.Controllers
                     response.ReasonPhrase = Consts.VALIDATION_ERROR_RESPONSE_PHRASE;
                     response.Content = new StringContent(Consts.C_RENTAL_CPF_ERROR_MESSAGE);
                 }
-                else
+                else if (!_rentalBusiness.ValidateRentalRelations(rental))
                 {
-                    List<Movie> moviesReceived = ValidateMovies(rental, ref response);
-                    if (response != null)
-                    {
-                        return response;
-                    }
-
-                    rental.MoviesList = moviesReceived;
+                    response = Request.CreateResponse(HttpStatusCode.NotFound);
+                    response.ReasonPhrase = Consts.C_MOVIE_NOT_FOUND;
+                    response.Content = new StringContent(Consts.C_RENTAL_INVALID_MOVIE_ERROR_MESSAGE);
+                }
+                else 
+                {
+                    IEnumerable<int> moviesIds = rental.MoviesList.Select(m => m.Id);
+                    _rentalBusiness.FillRentalMovies(rental, moviesIds);
+                        
                     _rentalBusiness.Update(id, rental);
                     await _rentalBusiness.ApplyChagesAsync();
 
                     response = Request.CreateResponse();
-                    response.Content = new ObjectContent<Rental>(repoRental, fJsonMTF, Consts.C_MT_JSON);
-                }
+                    response.Content = new ObjectContent<Rental>(rental, fJsonMTF, Consts.C_MT_JSON);
+                }                    
             }
             catch (Exception ex)
             {
@@ -203,12 +205,14 @@ namespace Movies.Server.SelfHost.Controllers
                     response = Request.CreateResponse(HttpStatusCode.NotFound);
                     response.ReasonPhrase = Consts.C_RENTAL_NOT_FOUND;
                 }
+                else
+                {
+                    _rentalBusiness.Delete(id);
+                    await _rentalBusiness.ApplyChagesAsync();
 
-                _rentalBusiness.Delete(id);
-                await _rentalBusiness.ApplyChagesAsync();
-
-                response = Request.CreateResponse();
-                response.Content = new StringContent(Consts.C_RENTAL_DELETED);
+                    response = Request.CreateResponse();
+                    response.Content = new StringContent(Consts.C_RENTAL_DELETED);
+                }
             }
             catch (Exception ex)
             {
@@ -217,41 +221,6 @@ namespace Movies.Server.SelfHost.Controllers
             }
             return response;
         }
-        #endregion
-
-        #region Private methods
-
-        /// <summary>
-        /// Use all the Rental Movies Ids provided and retrives the related Movies and add it to the return list. 
-        /// In case of any invalid Id, the reference of the HttpReseponseMessage will be filled with the error message.
-        /// </summary>
-        /// <param name="rental">The Rental that will have its Movies list verified</param>
-        /// <param name="response">A reference to a HttpResponseMessage that will be filled with 
-        /// an especific message if any invalid Movie Id is present in the Rental Movies list.
-        /// </param>
-        /// <returns>A list containing all the Movies correctly retrieved</returns>
-        private List<Movie> ValidateMovies(Rental rental, ref HttpResponseMessage response)
-        {
-            var moviesReceived = new List<Movie>();
-            if (rental.MoviesList.Count > 0)
-            {
-                foreach (Movie m in rental.MoviesList)
-                {
-                    var repoMovie = _movieBusiness.Get(m.Id);
-                    if (repoMovie != null)
-                    {
-                        moviesReceived.Add(repoMovie);
-                    }
-                    else
-                    {
-                        response = Request.CreateResponse(HttpStatusCode.NotFound);
-                        response.ReasonPhrase = Consts.C_MOVIE_NOT_FOUND;
-                        response.Content = new StringContent($"Movie with id {m.Id} does not existis. Crate this movie first");
-                    }
-                }
-            }
-            return moviesReceived;
-        }
-        #endregion
+        #endregion        
     }
 }

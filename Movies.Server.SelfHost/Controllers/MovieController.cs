@@ -21,7 +21,6 @@ namespace Movies.Server.SelfHost.Controllers
         #region Fields
         
         private readonly MovieBusiness _movieBusiness;
-        private readonly GenderBusiness _genderBusiness;
         private static readonly JsonMediaTypeFormatter fJsonMTF = new JsonMediaTypeFormatter();
 
         #endregion
@@ -30,7 +29,6 @@ namespace Movies.Server.SelfHost.Controllers
         public MovieController()
         {
             _movieBusiness = new MovieBusiness();
-            _genderBusiness = new GenderBusiness();
         }
         #endregion
 
@@ -112,10 +110,9 @@ namespace Movies.Server.SelfHost.Controllers
             HttpResponseMessage response;
             try
             {
-                var gender = _genderBusiness.Get(movie.Gender.Id);
-                if (gender != null)
+                if (_movieBusiness.ValidateMovieRelations(movie))
                 {
-                    movie.Gender = gender;
+                    _movieBusiness.FillGender(movie, movie.Gender.Id);
                     _movieBusiness.Add(movie);
                     await _movieBusiness.ApplyChagesAsync();
 
@@ -161,10 +158,9 @@ namespace Movies.Server.SelfHost.Controllers
                 }
                 else
                 {
-                    var gender = _genderBusiness.Get(movie.Gender.Id);
-                    if (gender != null)
-                    {                          
-                        movie.Gender = gender;
+                    if (_movieBusiness.ValidateMovieRelations(movie))
+                    {
+                        _movieBusiness.FillGender(movie, movie.Gender.Id);
                         _movieBusiness.Update(id, movie);
                         await _movieBusiness.ApplyChagesAsync();
 

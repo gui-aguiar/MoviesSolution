@@ -37,6 +37,7 @@ namespace Movies.Server.SelfHost.Common
         public static readonly string C_RENTAL_NOT_FOUND = "Rental not found";
         public static readonly string C_RENTAL_DELETED = "Rental deleted successfully";
         public static readonly string C_RENTAL_CPF_ERROR_MESSAGE = "CPF field is not correctly formatted.";
+        public static readonly string C_RENTAL_INVALID_MOVIE_ERROR_MESSAGE = "Rental contains an invalid Movie Id. Crate this movie first.";
         #endregion
     }
 }
