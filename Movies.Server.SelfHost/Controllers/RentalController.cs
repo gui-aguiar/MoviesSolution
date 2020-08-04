@@ -13,6 +13,10 @@ using Utils;
 
 namespace Movies.Server.SelfHost.Controllers
 {
+    /// <summary>
+    /// Rental controller Class. Exposes the Rental related APIs.
+    /// </summary>
+    [Authorize]
     public class RentalController : ApiController
     {
         #region Fields
@@ -45,7 +49,7 @@ namespace Movies.Server.SelfHost.Controllers
                 if (!rentals.Any())
                 {
                     response = Request.CreateResponse(HttpStatusCode.NotFound);
-                    response.ReasonPhrase = Consts.C_GENDER_NOT_FOUND;
+                    response.ReasonPhrase = Consts.C_RENTAL_NOT_FOUND;
                 }
                 else
                 {
@@ -117,7 +121,7 @@ namespace Movies.Server.SelfHost.Controllers
                 {
                     response = Request.CreateResponse(HttpStatusCode.NotFound);
                     response.ReasonPhrase = Consts.C_MOVIE_NOT_FOUND;
-                    response.Content = new StringContent(Consts.C_RENTAL_INVALID_MOVIE_ERROR_MESSAGE);
+                    response.Content = new StringContent(Consts.C_INVALID_RENTAL_ERROR_MESSAGE);
                 }
                 else
                 {
@@ -171,7 +175,7 @@ namespace Movies.Server.SelfHost.Controllers
                 {
                     response = Request.CreateResponse(HttpStatusCode.NotFound);
                     response.ReasonPhrase = Consts.C_MOVIE_NOT_FOUND;
-                    response.Content = new StringContent(Consts.C_RENTAL_INVALID_MOVIE_ERROR_MESSAGE);
+                    response.Content = new StringContent(Consts.C_INVALID_RENTAL_ERROR_MESSAGE);
                 }
                 else 
                 {

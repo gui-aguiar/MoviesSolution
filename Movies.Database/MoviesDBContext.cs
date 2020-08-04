@@ -23,15 +23,17 @@ namespace Movies.Database
         public DbSet<Gender> Gender { get; set; }
         public DbSet<Movie> Movie { get; set; }
         public DbSet<Rental> Rental { get; set; }
+        public DbSet<User> User { get; set; }
 
-        
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             // will configure the database
             modelBuilder.HasDefaultSchema("Movies");
             modelBuilder.Configurations.Add(new GenderConfiguration());
             modelBuilder.Configurations.Add(new MovieConfiguration());
-            modelBuilder.Configurations.Add(new RentalConfiguration());            
+            modelBuilder.Configurations.Add(new RentalConfiguration());
+            modelBuilder.Configurations.Add(new UserConfiguration());
         }
     }
 }

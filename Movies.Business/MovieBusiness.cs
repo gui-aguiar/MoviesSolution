@@ -2,7 +2,6 @@
 using Movies.Autofac;
 using Movies.Interfaces.Repository;
 using Movies.Models;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

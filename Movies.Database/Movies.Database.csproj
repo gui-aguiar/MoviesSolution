@@ -54,6 +54,7 @@
     <Compile Include="Configuration\GenderConfiguration.cs" />
     <Compile Include="Configuration\MovieConfiguration.cs" />
     <Compile Include="Configuration\RentalConfiguration.cs" />
+    <Compile Include="Configuration\UserConfiguration.cs" />
     <Compile Include="MoviesDBContext.cs" />
     <Compile Include="MoviesDBInitializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
