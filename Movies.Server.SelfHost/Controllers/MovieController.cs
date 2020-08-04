@@ -16,6 +16,7 @@ namespace Movies.Server.SelfHost.Controllers
     /// <summary>
     /// Movie controller Class. Exposes the Movie related APIs.
     /// </summary>
+    [Authorize]
     public class MovieController : ApiController
     {
         #region Fields

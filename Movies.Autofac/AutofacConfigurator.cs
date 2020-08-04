@@ -47,6 +47,7 @@ namespace Movies.Autofac
             builder.RegisterType<GenderRepository>().As<IRepository<Gender>>().SingleInstance();
             builder.RegisterType<MovieRepository>().As<IRepository<Movie>>().SingleInstance();
             builder.RegisterType<RentalRepository>().As<IRepository<Rental>>().SingleInstance();
+            builder.RegisterType<UserRepository>().As<IRepository<User>>().SingleInstance();
             fContainer = builder.Build();
         }
         #endregion

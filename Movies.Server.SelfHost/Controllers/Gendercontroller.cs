@@ -16,6 +16,7 @@ namespace Movies.Server.SelfHost.Controllers
     /// <summary>
     /// Gender controller Class. Exposes the Gender related APIs.
     /// </summary>
+    [Authorize]
     public class Gendercontroller : ApiController
     {
         #region Fields
@@ -48,7 +49,7 @@ namespace Movies.Server.SelfHost.Controllers
                 if(!genders.Any())
                 {
                     response = Request.CreateResponse(HttpStatusCode.NotFound);
-                    response.ReasonPhrase = Consts.C_MOVIE_NOT_FOUND;
+                    response.ReasonPhrase = Consts.C_GENDER_NOT_FOUND;
                 }
                 else
                 {                    
