@@ -40,4 +40,5 @@ The addreess to access the server API will be localhost:9000
   - The response will contain an authentication token that must be provided in the requestes Header "Authentication" with the value containing the word "bearer" followed by the provided token  
     
 - The application starts with no user registered. To create the users, the API client should use the /api/user URL. This URL does not ask for authentication.
+
 Author: Guilherme Aguiar
